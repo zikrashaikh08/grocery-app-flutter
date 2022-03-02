@@ -48,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
         const Duration(
           seconds: 3,
         ), () {
-      FirebaseAuth.instance.authStateChanges().listen((User user){
+      FirebaseAuth.instance.authStateChanges().listen((user){
         if (user == null) {
           Navigator.pushReplacement(
               context,

@@ -7,8 +7,8 @@ import '../services/user_services.dart';
 
 class AuthProvider with ChangeNotifier {
   FirebaseAuth _auth = FirebaseAuth.instance;
-  String smsOtp;
-  String verificationId;
+  late String smsOtp;
+  late String verificationId;
   String error ='';
   UserServices _userServices = UserServices();
 
@@ -23,10 +23,9 @@ class AuthProvider with ChangeNotifier {
       print(e.code);
     };
 
-    final PhoneCodeSent smsOtpSend = (String verId, int resendToken)async{
+    final Future<dynamic> Function(String verId, int? resendToken) smsOtpSend = (String verId, int? resendToken) async 
+    {
       this.verificationId = verId;
-
-      //open dialog to enter received OTP SMS
 
       smsOtpDialog(context, number);
     };
@@ -46,7 +45,7 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<bool>smsOtpDialog(BuildContext context,String number){
+  Future<dynamic>smsOtpDialog(BuildContext context,String number){
     return showDialog(
       context: context,
       builder: (BuildContext context){
@@ -78,9 +77,9 @@ class AuthProvider with ChangeNotifier {
                       PhoneAuthProvider.credential(
                         verificationId: verificationId, smsCode: smsOtp);
 
-                    final User user = (await _auth.signInWithCredential(phoneAuthCredential)).user;
+                    final User? user = (await _auth.signInWithCredential(phoneAuthCredential)).user;
                     //create user data in fireStore after user succesfully registered,
-                    _createUser(id:user.uid,number: user.phoneNumber);
+                    _createUser(id:user!.uid,number: user.phoneNumber);
                     //navigate to home page after login
 
                     if(user!=null){
@@ -106,7 +105,7 @@ class AuthProvider with ChangeNotifier {
         });
   }
 
-  void _createUser({String id, String number}){
+  void _createUser({String? id, String? number}){
   _userServices.createUserData({
     'id':id,
     'number':number,
