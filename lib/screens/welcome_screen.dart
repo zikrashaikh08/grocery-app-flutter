@@ -26,7 +26,8 @@ class WelcomeScreen extends StatelessWidget {
                       child: Container(
                         child: Column(
                           children: [
-                            Text(auth.error,
+                            Text(
+                              auth.error,
                               style: TextStyle(color: Colors.red, fontSize: 12),
                             ),
                             SizedBox(
@@ -49,6 +50,7 @@ class WelcomeScreen extends StatelessWidget {
                       height: 20,
                     ),
                     TextField(
+                      controller: _phoneNumberController,
                       decoration: InputDecoration(
                         prefixText: '+91',
                         labelText: '10 digit mobile number',
@@ -88,7 +90,8 @@ class WelcomeScreen extends StatelessWidget {
                               ),
                               onPressed: () {
                                 String number =
-                                    '+91${_phoneNumberController.text}';
+                                    '+91 ${_phoneNumberController.text}';
+                                print("num= $number");
                                 auth.verifyPhone(context, number).then((value) {
                                   _phoneNumberController.clear();
                                 });

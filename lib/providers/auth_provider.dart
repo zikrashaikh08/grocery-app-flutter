@@ -9,7 +9,7 @@ class AuthProvider with ChangeNotifier {
   FirebaseAuth _auth = FirebaseAuth.instance;
   late String smsOtp;
   late String verificationId;
-  String error ='';
+  String error = '';
   UserServices _userServices = UserServices();
 
   Future<void> verifyPhone(BuildContext context, String number) async {
@@ -20,95 +20,107 @@ class AuthProvider with ChangeNotifier {
 
     final PhoneVerificationFailed verificationFailed =
         (FirebaseAuthException e) {
+      print("Failed");
       print(e.code);
     };
 
-    final Future<dynamic> Function(String verId, int? resendToken) smsOtpSend = (String verId, int? resendToken) async 
-    {
+    final Future<dynamic> Function(String verId, int? resendToken) smsOtpSend =
+        (String verId, int? resendToken) async {
       this.verificationId = verId;
 
       smsOtpDialog(context, number);
     };
 
     try {
+      print(number);
       _auth.verifyPhoneNumber(
-          phoneNumber: number,
-          verificationCompleted: verificationCompleted,
-          verificationFailed: verificationFailed,
-          codeSent: smsOtpSend,
-          codeAutoRetrievalTimeout: (String verId){
-            this.verificationId = verId;
-          },
-        );
-    } catch (e){
+        phoneNumber: number,
+        verificationCompleted: verificationCompleted,
+        verificationFailed: verificationFailed,
+        codeSent: smsOtpSend,
+        codeAutoRetrievalTimeout: (String verId) {
+          this.verificationId = verId;
+        },
+      );
+    } catch (e) {
       print(e);
     }
   }
 
-  Future<dynamic>smsOtpDialog(BuildContext context,String number){
+  Future<dynamic> smsOtpDialog(BuildContext context, String number) {
     return showDialog(
-      context: context,
-      builder: (BuildContext context){
-        return AlertDialog(
-          title: Column(
-            children: [
-              Text('Verification Code'),
-              SizedBox(height: 6,),
-              Text('Enter 6 digit OTP received as SMS',
-              style: TextStyle(color: Colors.grey,fontSize: 12),),
-            ],
-          ),
-          content: Container(
-            height: 85,
-            child: TextField(
-              textAlign: TextAlign.center,
-              keyboardType: TextInputType.number,
-              maxLength: 6,
-              onChanged: (value){
-                this.smsOtp = value;
-              },
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Column(
+              children: [
+                Text('Verification Code'),
+                SizedBox(
+                  height: 6,
+                ),
+                Text(
+                  'Enter 6 digit OTP received as SMS',
+                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                ),
+              ],
             ),
-          ),
-          actions: [
-            FlatButton(
-              onPressed: ()async{
-                try{
-                  PhoneAuthCredential phoneAuthCredential =
-                      PhoneAuthProvider.credential(
-                        verificationId: verificationId, smsCode: smsOtp);
+            content: Container(
+              height: 85,
+              child: TextField(
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.number,
+                maxLength: 6,
+                onChanged: (value) {
+                  this.smsOtp = value;
+                },
+              ),
+            ),
+            actions: [
+              FlatButton(
+                onPressed: () async {
+                  try {
+                    PhoneAuthCredential phoneAuthCredential =
+                        PhoneAuthProvider.credential(
+                            verificationId: verificationId, smsCode: smsOtp);
 
-                    final User? user = (await _auth.signInWithCredential(phoneAuthCredential)).user;
+                    final User? user =
+                        (await _auth.signInWithCredential(phoneAuthCredential))
+                            .user;
                     //create user data in fireStore after user succesfully registered,
-                    _createUser(id:user!.uid,number: user.phoneNumber);
+                    _createUser(id: user!.uid, number: user.phoneNumber);
                     //navigate to home page after login
 
-                    if(user!=null){
+                    if (user != null) {
                       Navigator.of(context).pop();
 
                       //don't want come back to welcome screen after loggd in
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen(),
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => HomeScreen(),
                       ));
-                    }else{
+                    } else {
                       print('login Failed');
                     }
-                  } catch(e){
+                  } catch (e) {
                     this.error = 'Invalid OTP';
                     notifyListeners();
                     print(e.toString());
                     Navigator.of(context).pop();
                   }
                 },
-                child: Text('DONE',style: TextStyle(color: Theme.of(context).primaryColor),),
+                child: Text(
+                  'DONE',
+                  style: TextStyle(color: Theme.of(context).primaryColor),
+                ),
               ),
             ],
           );
         });
   }
 
-  void _createUser({String? id, String? number}){
-  _userServices.createUserData({
-    'id':id,
-    'number':number,
-  });
-}
+  void _createUser({String? id, String? number}) {
+    _userServices.createUserData({
+      'id': id,
+      'number': number,
+    });
+  }
 }

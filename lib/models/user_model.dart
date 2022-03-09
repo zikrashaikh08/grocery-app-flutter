@@ -1,19 +1,20 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-// class UserModel{
-//   static const NUMBER = 'number'; //to avoid any typos
-//   static const ID = 'id';
+class UserModel {
+  static const NUMBER = 'number'; //to avoid any typos
+  static const ID = 'id';
 
-//   String _number;
-//   String _id;
+  String? _number;
+  String? _id;
 
-//   //getter
+  //getter
 
-//   String get number => _number;
-//   String get id => _id;
+  String get number => _number!;
+  String get id => _id!;
 
-//   UserModel.fromSnapshot(DocumentSnapshot snapshot) {
-//     _number = snapshot[NUMBER];
-//     _id = snapshot[ID];
-//   }
-// }
+  UserModel.fromSnapshot(DocumentSnapshot snapshot) {
+    var data = snapshot.data() as Map;
+    this._number = data[NUMBER];
+    this._id = data[ID];
+  }
+}
