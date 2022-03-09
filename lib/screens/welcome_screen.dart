@@ -4,6 +4,7 @@ import 'package:grocery_app/screens/onboard_screen.dart';
 import 'package:provider/provider.dart';
 
 class WelcomeScreen extends StatelessWidget {
+  static const String id = 'welcome-screen';
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);

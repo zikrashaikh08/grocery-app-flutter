@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 
 class HomeScreen extends StatelessWidget {
+  static const String id = 'home-screen';
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);

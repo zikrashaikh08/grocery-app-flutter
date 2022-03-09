@@ -7,6 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
 import 'screens/homeScreen.dart';
+import 'screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,59 +31,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(primaryColor: Colors.deepOrangeAccent),
-      home: SplashScreen(),
+      initialRoute: SplashScreen.id,
+      routes: {
+        SplashScreen.id:(context)=>SplashScreen(),
+        HomeScreen.id:(context)=>HomeScreen(),
+        WelcomeScreen.id:(context)=>WelcomeScreen(),
+      },
     );
   }
 }
 
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
-  @override
-  _SplashScreenState createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    Timer(
-        const Duration(
-          seconds: 3,
-        ), () {
-      FirebaseAuth.instance.authStateChanges().listen((user){
-        if (user == null) {
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => WelcomeScreen(),
-              ));
-        } else {
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HomeScreen(),
-              ));
-        }
-      });
-    });
-    super.initState();
-  }
-
-  void get newMethod => initState;
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.asset('images/logo.png'),
-            const Text(
-              'Grocery Store',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
