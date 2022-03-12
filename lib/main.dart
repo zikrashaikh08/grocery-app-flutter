@@ -9,6 +9,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
 import 'screens/homeScreen.dart';
+import 'screens/login_screen.dart';
 import 'screens/splash_screen.dart';
 
 void main() async {
@@ -42,6 +43,7 @@ class MyApp extends StatelessWidget {
         HomeScreen.id:(context)=>HomeScreen(),
         WelcomeScreen.id:(context)=>WelcomeScreen(),
         MapScreen.id:(context) =>MapScreen(),
+        
       },
     );
   }

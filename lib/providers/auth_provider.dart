@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,17 +12,26 @@ class AuthProvider with ChangeNotifier {
   late String verificationId;
   String error = '';
   UserServices _userServices = UserServices();
+  bool loading = false;
 
   Future<void> verifyPhone(BuildContext context, String number) async {
+    this.loading = true;
+    notifyListeners();
+    
     final PhoneVerificationCompleted verificationCompleted =
         (PhoneAuthCredential credential) async {
+      this.loading = false;
+      notifyListeners();
       await _auth.signInWithCredential(credential);
     };
 
     final PhoneVerificationFailed verificationFailed =
         (FirebaseAuthException e) {
+      this.loading = false;
       print("Failed");
       print(e.code);
+      this.error = e.toString();
+      notifyListeners();
     };
 
     final Future<dynamic> Function(String verId, int? resendToken) smsOtpSend =
@@ -43,6 +53,8 @@ class AuthProvider with ChangeNotifier {
         },
       );
     } catch (e) {
+      this.error = e.toString();
+      notifyListeners();
       print(e);
     }
   }
@@ -94,9 +106,7 @@ class AuthProvider with ChangeNotifier {
                       Navigator.of(context).pop();
 
                       //don't want come back to welcome screen after loggd in
-                      Navigator.pushReplacementNamed(context,HomeScreen.id);
-                     
-                     
+                      Navigator.pushReplacementNamed(context, HomeScreen.id);
                     } else {
                       print('login Failed');
                     }
@@ -117,10 +127,33 @@ class AuthProvider with ChangeNotifier {
         });
   }
 
-  void _createUser({String? id, String? number}) {
+  void _createUser(
+      {String? id,
+      String? number,
+      double? latitude,
+      double? longitude,
+      String? address}) {
     _userServices.createUserData({
       'id': id,
       'number': number,
+      'location': GeoPoint(latitude!, longitude!),
+      'address': address
     });
+
+    void _updateUser(
+        {String? id,
+        String? number,
+        double? latitude,
+        double? longitude,
+        String? address}) {
+      _userServices.updateUserData({
+        'id': id,
+        'number': number,
+        'location': GeoPoint(latitude!, longitude!),
+        'address': address
+      });
+    }
   }
+
+  
 }

@@ -12,20 +12,31 @@ class HomeScreen extends StatelessWidget {
     final auth = Provider.of<AuthProvider>(context);
     return Scaffold(
       body: Center(
-        child: RaisedButton(
-          onPressed: () {
-            auth.error = '';
-            FirebaseAuth.instance.signOut().then((value) {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => WelcomeScreen(),
-                  ));
-            });
-          },
-          child: Text('Sign Out'),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+            RaisedButton(
+              onPressed: () {
+                auth.error = '';
+                FirebaseAuth.instance.signOut().then((value) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => WelcomeScreen(),
+                    ));
+                  });
+                },
+                child: Text('Sign Out'),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, WelcomeScreen.id);
+                },
+                child: Text('Home Screen'),
+              ),
+            ],
+          ),
         ),
-      ),
     );
   }
 }

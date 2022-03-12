@@ -8,11 +8,18 @@ import 'package:provider/provider.dart';
 
 import 'map_screen.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends StatefulWidget {
   static const String id = 'welcome-screen';
+
+  @override
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
+
     bool _validPhoneNumber = false;
     var _phoneNumberController = TextEditingController();
 
@@ -85,16 +92,10 @@ class WelcomeScreen extends StatelessWidget {
                           child: AbsorbPointer(
                             absorbing: _validPhoneNumber ? false : true,
                             child: FlatButton(
-                              color: _validPhoneNumber
-                                  ? Theme.of(context).primaryColor
-                                  : Colors.grey,
-                              child: Text(
-                                _validPhoneNumber
-                                    ? 'CONTINUE'
-                                    : 'ENTER PHONE NUMBER',
-                                style: TextStyle(color: Colors.white),
-                              ),
                               onPressed: () {
+                                myState(() {
+                                  auth.loading = true;
+                                });
                                 String number =
                                     '+91 ${_phoneNumberController.text}';
                                 print("num= $number");
@@ -102,6 +103,20 @@ class WelcomeScreen extends StatelessWidget {
                                   _phoneNumberController.clear();
                                 });
                               },
+                              color: _validPhoneNumber
+                                  ? Theme.of(context).primaryColor
+                                  : Colors.grey,
+                              child: auth.loading
+                                  ? CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.white),
+                                    )
+                                  : Text(
+                                      _validPhoneNumber
+                                          ? 'CONTINUE'
+                                          : 'ENTER PHONE NUMBER',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
                             ),
                           ),
                         ),
@@ -146,16 +161,30 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 FlatButton(
                   color: Colors.deepOrangeAccent,
-                  child: Text(
-                    'SET DELIVERY LOCATION',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  child: locationData.loading
+                      ? CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        )
+                      : Text(
+                          'SET DELIVERY LOCATION',
+                          style: TextStyle(color: Colors.white),
+                        ),
                   onPressed: () async {
+                    setState(() {
+                      locationData.loading = true;
+                    });
                     await locationData.getCurrentPosition();
-                    if (locationData.permissionAllowed==true) {
-                        Navigator.pushReplacementNamed(context, MapScreen.id);
+                    if (locationData.permissionAllowed == true) {
+                      Navigator.pushReplacementNamed(context, MapScreen.id);
+                      setState(() {
+                        locationData.loading = false;
+                      });
                     } else {
                       print('Permission not allowed');
+                      setState(() {
+                        locationData.loading = false;
+                      });
                     }
                   },
                 ),
