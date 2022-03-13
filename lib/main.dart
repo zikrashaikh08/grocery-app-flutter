@@ -43,6 +43,7 @@ class MyApp extends StatelessWidget {
         HomeScreen.id:(context)=>HomeScreen(),
         WelcomeScreen.id:(context)=>WelcomeScreen(),
         MapScreen.id:(context) =>MapScreen(),
+        LoginScreen.id:(context) =>LoginScreen(),
         
       },
     );

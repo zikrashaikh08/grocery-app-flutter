@@ -13,45 +13,55 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
     var preferredSize3 = PreferredSize(
-          preferredSize: const Size.fromHeight(56),
-          child: Padding(
-            padding: const EdgeInserts.all(10.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText:'Search',
-                prefixIcon: Icon(Icons.search,color: Colors.grey,),
-                border: OutlineInputBorder(
-                  borderRadius:BorderRadius.circular(5),
-                  borderSide:BorderSide.none,
-                ),
-                contentPadding: EdgeInserts.zero,
-	              filled: true,
-                fillColor: Colors.white,
-	           ),
-           ),
-	       ),
-        );
+      preferredSize: const Size.fromHeight(56),
+      child: Padding(
+        padding: const EdgeInserts.all(10.0),
+        child: TextField(
+          decoration: InputDecoration(
+            hintText: 'Search',
+            prefixIcon: Icon(
+              Icons.search,
+              color: Colors.grey,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(5),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: EdgeInserts.zero,
+            filled: true,
+            fillColor: Colors.white,
+          ),
+        ),
+      ),
+    );
     var preferredSize2 = preferredSize3;
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
         leading: Container(),
         title: FlatButton(
-          onPressed: () {   
-          },
+          onPressed: () {},
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Delivery Address',style: TextStyle(color: Colors.white),),
-              Icon(Icons.edit_outlined,color: Colors.white,),
+              Text(
+                'Delivery Address',
+                style: TextStyle(color: Colors.white),
+              ),
+              Icon(
+                Icons.edit_outlined,
+                color: Colors.white,
+              ),
             ],
-
           ),
         ),
         actions: [
           Padding(
             padding: const EdgeInsets.all(10.0),
-            child: IconButton(icon: Icon(Icons.account_circle_outlined),onPressed: (){},),
+            child: IconButton(
+              icon: Icon(Icons.account_circle_outlined),
+              onPressed: () {},
+            ),
           ),
         ],
         centerTitle: true,
@@ -65,22 +75,24 @@ class HomeScreen extends StatelessWidget {
               onPressed: () {
                 auth.error = '';
                 FirebaseAuth.instance.signOut().then((value) {
-                  Navigator.push(context,MaterialPageRoute(
-                      builder: (context) => WelcomeScreen(),
-                  ));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => WelcomeScreen(),
+                      ));
                 });
               },
               child: Text('Sign Out'),
             ),
-              RaisedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, WelcomeScreen.id);
-                },
-                child: Text('Home Screen'),
-              ),
-            ],
-          ),
+            RaisedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, WelcomeScreen.id);
+              },
+              child: Text('Home Screen'),
+            ),
+          ],
         ),
+      ),
     );
   }
 }

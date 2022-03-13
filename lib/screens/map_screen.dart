@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:grocery_app/providers/auth_provider.dart';
 import 'package:grocery_app/providers/location_provider.dart';
+import 'package:grocery_app/screens/homeScreen.dart';
 import 'package:grocery_app/screens/login_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -28,10 +30,12 @@ class _MapScreenState extends State<MapScreen> {
 
   void getCurrentUser() {
     User? user = FirebaseAuth.instance.currentUser;
+    setState(() {
+      user = FirebaseAuth.instance.currentUser;
+    });
     if (user != null) {
       setState(() {
         _loggedIn = true;
-        user = FirebaseAuth.instance.currentUser;
       });
     }
   }
@@ -86,6 +90,12 @@ class _MapScreenState extends State<MapScreen> {
                 child: Image.asset(
                   'images/marker.jpg',
                 ),
+              ),
+            ),
+            Center(
+              child: SpinKitPulse(
+                color: Colors.black54,
+                size: 100.0,
               ),
             ),
             Positioned(
@@ -145,7 +155,22 @@ class _MapScreenState extends State<MapScreen> {
                           absorbing: _locating ? true : false,
                           child: FlatButton(
                             onPressed: () {
-                              
+                              if (_loggedIn == false) {
+                                Navigator.pushNamed(context, LoginScreen.id);
+                              } else {_auth.({String id,
+                                    String number,
+                                    double latitude,
+                                    double longitude,
+                                    address}) {}(
+                                  id: user.uid,
+                                  number: user.phoneNumber,
+                                  latitude: locationData.latitude,
+                                  longitude: locationData.longitude,
+                                  address:
+                                      locationData.selectedAddress.addressLine,
+                                );
+                                Navigator.pushNamed(context, HomeScreen.id);
+                              }
                             },
                             color: _locating
                                 ? Colors.grey

@@ -1,7 +1,10 @@
+import 'dart:html';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:grocery_app/providers/location_provider.dart';
 import 'package:grocery_app/screens/homeScreen.dart';
 
 import '../services/user_services.dart';
@@ -13,11 +16,12 @@ class AuthProvider with ChangeNotifier {
   String error = '';
   UserServices _userServices = UserServices();
   bool loading = false;
+  LocationProvider locationData = LocationProvider();
 
-  Future<void> verifyPhone(BuildContext context, String number) async {
+  Future<void> verifyPhone({context,number,latitud,longitude,address}) async {
     this.loading = true;
     notifyListeners();
-    
+
     final PhoneVerificationCompleted verificationCompleted =
         (PhoneAuthCredential credential) async {
       this.loading = false;
@@ -34,11 +38,12 @@ class AuthProvider with ChangeNotifier {
       notifyListeners();
     };
 
+    // ignore: prefer_function_declarations_over_variables
     final Future<dynamic> Function(String verId, int? resendToken) smsOtpSend =
         (String verId, int? resendToken) async {
       this.verificationId = verId;
 
-      smsOtpDialog(context, number);
+      smsOtpDialog(context, number, latitud, longitude, address);
     };
 
     try {
@@ -59,7 +64,10 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<dynamic> smsOtpDialog(BuildContext context, String number) {
+  String? newMethod(String? number) => number;
+
+  Future<dynamic> smsOtpDialog(BuildContext context, String number,
+      double latitude, double longitude, String address) {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -98,13 +106,32 @@ class AuthProvider with ChangeNotifier {
                     final User? user =
                         (await _auth.signInWithCredential(phoneAuthCredential))
                             .user;
-                    //create user data in fireStore after user succesfully registered,
-                    _createUser(id: user!.uid, number: user.phoneNumber);
+                    if (locationData.selectedAddress != null) {
+                      (
+                          {String? id,
+                          String? number,
+                          double? latitude,
+                          double? longitude,
+                          address}) {}(
+                          id: user!.uid,
+                          number: user.phoneNumber,
+                          latitude: locationData.latitude,
+                          longitude: locationData.longitude,
+                          address: locationData.selectedAddress.addressLine);
+                    } else {
+                      //create user data in fireStore after user succesfully registered,
+                      _createUser(
+                          id: user!.uid,
+                          number: user.phoneNumber,
+                          latitude: latitude,
+                          longitude: longitude,
+                          address: address);
+                    }
+
                     //navigate to home page after login
 
                     if (user != null) {
                       Navigator.of(context).pop();
-
                       //don't want come back to welcome screen after loggd in
                       Navigator.pushReplacementNamed(context, HomeScreen.id);
                     } else {
@@ -136,11 +163,14 @@ class AuthProvider with ChangeNotifier {
     _userServices.createUserData({
       'id': id,
       'number': number,
-      'location': GeoPoint(latitude!, longitude!),
+      'latitude': latitude,
+      'longitude': longitude,
       'address': address
     });
-
-    void _updateUser(
+    this.loading = false;
+    notifyListeners();
+  }
+    void updateUser(
         {String? id,
         String? number,
         double? latitude,
@@ -149,11 +179,11 @@ class AuthProvider with ChangeNotifier {
       _userServices.updateUserData({
         'id': id,
         'number': number,
-        'location': GeoPoint(latitude!, longitude!),
+        'latitude': latitude,
+        'longitude': longitude,
         'address': address
       });
+      this.loading = false;
+      notifyListeners();
     }
-  }
-
-  
 }

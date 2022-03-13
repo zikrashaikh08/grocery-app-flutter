@@ -96,10 +96,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 myState(() {
                                   auth.loading = true;
                                 });
-                                String number =
-                                    '+91 ${_phoneNumberController.text}';
+                                String number ='+91 ${_phoneNumberController.text}';
                                 print("num= $number");
-                                auth.verifyPhone(context, number).then((value) {
+                                auth.verifyPhone(context: context,number: number,latitud: null, longitude: null, address: null).then((value) {
                                   _phoneNumberController.clear();
                                 });
                               },
