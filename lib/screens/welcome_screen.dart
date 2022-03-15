@@ -96,9 +96,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 myState(() {
                                   auth.loading = true;
                                 });
-                                String number ='+91 ${_phoneNumberController.text}';
+                                String number =
+                                    '+91 ${_phoneNumberController.text}';
                                 print("num= $number");
-                                auth.verifyPhone(context: context,number: number,latitud: null, longitude: null, address: null).then((value) {
+                                auth.verifyPhone(
+                                        context: context,
+                                        number: number)
+                                    .then((value) {
                                   _phoneNumberController.clear();
                                 });
                               },
@@ -127,7 +131,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             );
           },
         ),
-      );
+      ).whenComplete(() {
+        setState(() {
+          auth.loading = false;
+          _phoneNumberController.clear();
+        });
+      });
     }
 
     final locationData = Provider.of<LocationProvider>(context, listen: false);
@@ -204,6 +213,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     ),
                   ),
                   onPressed: () {
+                    setState(() {
+                      auth.screen = 'Login';
+                    });
                     showBottomSheet(context);
                   },
                 ),

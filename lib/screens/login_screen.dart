@@ -93,11 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             auth
                                 .verifyPhone(
                                     context: context,
-                                    number: number,
-                                    latitud: locationData.latitude,
-                                    longitude: locationData.longitude,
-                                    address:
-                                        locationData.selectedAddress.addressLine)
+                                    number: number)
                                 .then((value) {
                               _phoneNumberController.clear();
                               setState(() {

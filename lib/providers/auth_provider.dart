@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_app/providers/location_provider.dart';
 import 'package:grocery_app/screens/homeScreen.dart';
+import 'package:grocery_app/screens/map_screen.dart';
 
 import '../services/user_services.dart';
 
@@ -17,8 +18,9 @@ class AuthProvider with ChangeNotifier {
   UserServices _userServices = UserServices();
   bool loading = false;
   LocationProvider locationData = LocationProvider();
+  late String screen;
 
-  Future<void> verifyPhone({context,number,latitud,longitude,address}) async {
+  Future<void> verifyPhone({BuildContext context, String number}) async {
     this.loading = true;
     notifyListeners();
 
@@ -43,7 +45,7 @@ class AuthProvider with ChangeNotifier {
         (String verId, int? resendToken) async {
       this.verificationId = verId;
 
-      smsOtpDialog(context, number, latitud, longitude, address);
+      smsOtpDialog(context, number);
     };
 
     try {
@@ -59,6 +61,7 @@ class AuthProvider with ChangeNotifier {
       );
     } catch (e) {
       this.error = e.toString();
+      this.loading = false;
       notifyListeners();
       print(e);
     }
@@ -66,8 +69,7 @@ class AuthProvider with ChangeNotifier {
 
   String? newMethod(String? number) => number;
 
-  Future<dynamic> smsOtpDialog(BuildContext context, String number,
-      double latitude, double longitude, String address) {
+  Future<dynamic> smsOtpDialog(BuildContext context, String number) {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -106,36 +108,24 @@ class AuthProvider with ChangeNotifier {
                     final User? user =
                         (await _auth.signInWithCredential(phoneAuthCredential))
                             .user;
-                    if (locationData.selectedAddress != null) {
-                      (
-                          {String? id,
-                          String? number,
-                          double? latitude,
-                          double? longitude,
-                          address}) {}(
-                          id: user!.uid,
-                          number: user.phoneNumber,
-                          latitude: locationData.latitude,
-                          longitude: locationData.longitude,
-                          address: locationData.selectedAddress.addressLine);
-                    } else {
-                      //create user data in fireStore after user succesfully registered,
-                      _createUser(
-                          id: user!.uid,
-                          number: user.phoneNumber,
-                          latitude: latitude,
-                          longitude: longitude,
-                          address: address);
-                    }
-
-                    //navigate to home page after login
-
                     if (user != null) {
-                      Navigator.of(context).pop();
-                      //don't want come back to welcome screen after loggd in
-                      Navigator.pushReplacementNamed(context, HomeScreen.id);
+                      _userServices.getUserById(user.uid).then((snapShot) {
+                        if (snapShot.exists) {
+                          //user data already exists
+                          if (this.screen == 'Login') {
+                            //need to check user data already exists in db or not.
+                            //id exists,data will update or create new data
+                            Navigator.pushReplacementNamed(context, routeName)
+                          } else {
+                            Navigator.pushReplacementNamed(context, MapScreen.id);
+                          }
+                        } else {
+                          //user data does not exists
+                          //will create new data db
+                        }
+                      });
                     } else {
-                      print('login Failed');
+                      print('Login failed');
                     }
                   } catch (e) {
                     this.error = 'Invalid OTP';
@@ -170,20 +160,21 @@ class AuthProvider with ChangeNotifier {
     this.loading = false;
     notifyListeners();
   }
-    void updateUser(
-        {String? id,
-        String? number,
-        double? latitude,
-        double? longitude,
-        String? address}) {
-      _userServices.updateUserData({
-        'id': id,
-        'number': number,
-        'latitude': latitude,
-        'longitude': longitude,
-        'address': address
-      });
-      this.loading = false;
-      notifyListeners();
-    }
+
+  void updateUser(
+      {String? id,
+      String? number,
+      double? latitude,
+      double? longitude,
+      String? address}) {
+    _userServices.updateUserData({
+      'id': id,
+      'number': number,
+      'latitude': latitude,
+      'longitude': longitude,
+      'address': address
+    });
+    this.loading = false;
+    notifyListeners();
+  }
 }
