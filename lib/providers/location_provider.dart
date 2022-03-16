@@ -39,6 +39,7 @@ class LocationProvider with ChangeNotifier {
     final addresses =
         await Geocoder.local.findAddressesFromCoordinates(coordinates);
     this.selectedAddress = addresses.first;
+    notifyListeners();
     print("${selectedAddress.featureName} : ${selectedAddress.addressLine}");
   }
 }

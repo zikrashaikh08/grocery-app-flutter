@@ -1,5 +1,6 @@
 import 'dart:html';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_app/providers/auth_provider.dart';
 import 'package:grocery_app/providers/location_provider.dart';
@@ -95,13 +96,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               onPressed: () {
                                 myState(() {
                                   auth.loading = true;
+                                  auth.screen = 'MapScreen';
                                 });
                                 String number =
                                     '+91 ${_phoneNumberController.text}';
                                 print("num= $number");
-                                auth.verifyPhone(
-                                        context: context,
-                                        number: number)
+                                auth
+                                    .verifyPhone(
+                                        context: context, number: number)
                                     .then((value) {
                                   _phoneNumberController.clear();
                                 });
@@ -182,6 +184,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     setState(() {
                       locationData.loading = true;
                     });
+
                     await locationData.getCurrentPosition();
                     if (locationData.permissionAllowed == true) {
                       Navigator.pushReplacementNamed(context, MapScreen.id);

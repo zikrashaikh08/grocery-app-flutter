@@ -157,13 +157,11 @@ class _MapScreenState extends State<MapScreen> {
                             onPressed: () {
                               if (_loggedIn == false) {
                                 Navigator.pushNamed(context, LoginScreen.id);
-                              } else {_auth.updateUser(
+                              } else {
+                                print(user.uid);
+                                _auth.updateUser(
                                   id: user.uid,
                                   number: user.phoneNumber,
-                                  latitude: locationData.latitude,
-                                  longitude: locationData.longitude,
-                                  address:
-                                      locationData.selectedAddress.addressLine,
                                 );
                                 Navigator.pushNamed(context, HomeScreen.id);
                               }

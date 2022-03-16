@@ -20,7 +20,7 @@ class AuthProvider with ChangeNotifier {
   LocationProvider locationData = LocationProvider();
   late String screen;
 
-  Future<void> verifyPhone({BuildContext context, String number}) async {
+  Future<void> verifyPhone({BuildContext context, String number, double latitude, double longitude, String address}) async {
     this.loading = true;
     notifyListeners();
 
@@ -109,19 +109,30 @@ class AuthProvider with ChangeNotifier {
                         (await _auth.signInWithCredential(phoneAuthCredential))
                             .user;
                     if (user != null) {
+                      this.loading = false;
+                      notifyListeners();
                       _userServices.getUserById(user.uid).then((snapShot) {
                         if (snapShot.exists) {
                           //user data already exists
                           if (this.screen == 'Login') {
                             //need to check user data already exists in db or not.
                             //id exists,data will update or create new data
-                            Navigator.pushReplacementNamed(context, routeName)
+                            Navigator.pushReplacementNamed(
+                                context, HomeScreen.id);
                           } else {
-                            Navigator.pushReplacementNamed(context, MapScreen.id);
+                            //need to update new selected address
+                            print(
+                                '${locationData.latitude}:${locationData.longitude}');
+                            updateUser(id: user.uid, number: user.phoneNumber);
+                            Navigator.pushReplacementNamed(
+                                context, HomeScreen.id);
                           }
                         } else {
                           //user data does not exists
                           //will create new data db
+                          _createUser(id: user.uid, number: user.phoneNumber);
+                          Navigator.pushReplacementNamed(
+                              context, HomeScreen.id);
                         }
                       });
                     } else {
@@ -141,38 +152,39 @@ class AuthProvider with ChangeNotifier {
               ),
             ],
           );
-        });
+        }).whenComplete(() {
+      this.loading = false;
+      notifyListeners();
+    });
   }
 
-  void _createUser(
-      {String? id,
-      String? number,
-      double? latitude,
-      double? longitude,
-      String? address}) {
+  void _createUser({
+    String? id,
+    String? number,
+  }) {
     _userServices.createUserData({
       'id': id,
       'number': number,
-      'latitude': latitude,
-      'longitude': longitude,
-      'address': address
+      'latitude': locationData.latitude,
+      'longitude': locationData.longitude,
+      'address': locationData.selectedAddress == null
+          ? locationData.selectedAddress
+          : locationData.selectedAddress.addressLine,
     });
     this.loading = false;
     notifyListeners();
   }
 
-  void updateUser(
-      {String? id,
-      String? number,
-      double? latitude,
-      double? longitude,
-      String? address}) {
+  void updateUser({
+    String? id,
+    String? number,
+  }) {
     _userServices.updateUserData({
       'id': id,
       'number': number,
-      'latitude': latitude,
-      'longitude': longitude,
-      'address': address
+      'latitude': locationData.latitude,
+      'longitude': locationData.longitude,
+      'address': locationData.selectedAddress.addressLine
     });
     this.loading = false;
     notifyListeners();
