@@ -19,8 +19,11 @@ class AuthProvider with ChangeNotifier {
   bool loading = false;
   LocationProvider locationData = LocationProvider();
   late String screen;
+  late double latitude;
+  late double longitude;
+  late double address;
 
-  Future<void> verifyPhone({BuildContext context, String number, double latitude, double longitude, String address}) async {
+  Future<void> verifyPhone({BuildContext? context,String? number}) async {
     this.loading = true;
     notifyListeners();
 
@@ -45,13 +48,13 @@ class AuthProvider with ChangeNotifier {
         (String verId, int? resendToken) async {
       this.verificationId = verId;
 
-      smsOtpDialog(context, number);
+      smsOtpDialog(context!, number!);
     };
 
     try {
       print(number);
       _auth.verifyPhoneNumber(
-        phoneNumber: number,
+        phoneNumber: number!,
         verificationCompleted: verificationCompleted,
         verificationFailed: verificationFailed,
         codeSent: smsOtpSend,
@@ -121,6 +124,7 @@ class AuthProvider with ChangeNotifier {
                                 context, HomeScreen.id);
                           } else {
                             //need to update new selected address
+
                             print(
                                 '${locationData.latitude}:${locationData.longitude}');
                             updateUser(id: user.uid, number: user.phoneNumber);
@@ -165,28 +169,32 @@ class AuthProvider with ChangeNotifier {
     _userServices.createUserData({
       'id': id,
       'number': number,
-      'latitude': locationData.latitude,
-      'longitude': locationData.longitude,
-      'address': locationData.selectedAddress == null
-          ? locationData.selectedAddress
-          : locationData.selectedAddress.addressLine,
+      'latitude': this.latitude,
+      'longitude': this.longitude,
+      'address': this.address
     });
     this.loading = false;
     notifyListeners();
   }
 
-  void updateUser({
+  Future<bool> updateUser({
     String? id,
     String? number,
-  }) {
-    _userServices.updateUserData({
-      'id': id,
-      'number': number,
-      'latitude': locationData.latitude,
-      'longitude': locationData.longitude,
-      'address': locationData.selectedAddress.addressLine
-    });
-    this.loading = false;
-    notifyListeners();
+  }) async{
+    try {
+      _userServices.updateUserData({
+        'id': id,
+        'number': number,
+        'latitude': this.latitude,
+        'longitude': this.longitude,
+        'address': this.address
+      });
+      this.loading = false;
+      notifyListeners();
+      return true;
+    }catch (e) {
+      print('Error $e');
+      return false;
+    }
   }
 }

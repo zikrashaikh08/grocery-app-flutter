@@ -158,12 +158,19 @@ class _MapScreenState extends State<MapScreen> {
                               if (_loggedIn == false) {
                                 Navigator.pushNamed(context, LoginScreen.id);
                               } else {
-                                print(user.uid);
+                                  setState(() {
+                                    _auth.latitude = locationData.latitude;
+                                    _auth.longitude = locationData.longitude;
+                                    _auth.address = locationData.selectedAddress.addressLine;
+                                  });
                                 _auth.updateUser(
                                   id: user.uid,
                                   number: user.phoneNumber,
-                                );
-                                Navigator.pushNamed(context, HomeScreen.id);
+                                ).then((value){
+                                  if(value == true){
+                                    Navigator.pushNamed(context, HomeScreen.id);
+                                  }
+                                });
                               }
                             },
                             color: _locating

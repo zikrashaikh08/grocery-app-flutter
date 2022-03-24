@@ -4,69 +4,61 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_app/screens/welcome_screen.dart';
 import 'package:provider/provider.dart';
-
+import 'package:grocery_app/providers/location_provider.dart';
+import 'map_screen.dart';
 import '../providers/auth_provider.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   static const String id = 'home-screen';
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
-    var preferredSize3 = PreferredSize(
-      preferredSize: const Size.fromHeight(56),
-      child: Padding(
-        padding: const EdgeInserts.all(10.0),
-        child: TextField(
-          decoration: InputDecoration(
-            hintText: 'Search',
-            prefixIcon: Icon(
-              Icons.search,
-              color: Colors.grey,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(5),
-              borderSide: BorderSide.none,
-            ),
-            contentPadding: EdgeInserts.zero,
-            filled: true,
-            fillColor: Colors.white,
-          ),
-        ),
-      ),
-    );
-    var preferredSize2 = preferredSize3;
+    final locationData = Provider.of<LocationProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        elevation: 0.0,
-        leading: Container(),
-        title: FlatButton(
-          onPressed: () {},
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Delivery Address',
-                style: TextStyle(color: Colors.white),
-              ),
-              Icon(
-                Icons.edit_outlined,
-                color: Colors.white,
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: IconButton(
-              icon: Icon(Icons.account_circle_outlined),
-              onPressed: () {},
+          elevation: 0.0,
+          leading: Container(),
+          title: FlatButton(
+            onPressed: () {},
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Delivery Address',style: TextStyle(color: Colors.white),),
+                Icon(Icons.edit_outlined,color: Colors.white,),
+              ],
             ),
           ),
-        ],
-        centerTitle: true,
-        bottom: preferredSize2,
-      ),
+          actions: [
+            IconButton(icon: Icon(Icons.account_circle_outlined,color: Colors.white,),
+              onPressed: () {},
+            ),
+          ],
+          centerTitle: true,
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(56),
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Search',
+                  prefixIcon: Icon(Icons.search,color: Colors.grey,),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: EdgeInsets.zero,
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+              ),
+            ),
+          )),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,

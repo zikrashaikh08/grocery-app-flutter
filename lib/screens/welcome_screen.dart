@@ -154,7 +154,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               child: FlatButton(
                 child: Text(
                   'SKIP',
-                  style: TextStyle(color: Colors.deepOrangeAccent),
+                  style: TextStyle(color: Theme.of(context).primaryColor),
                 ),
                 onPressed: () {},
               ),
@@ -170,7 +170,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   height: 20,
                 ),
                 FlatButton(
-                  color: Colors.deepOrangeAccent,
+                  color:Theme.of(context).primaryColor,
                   child: locationData.loading
                       ? CircularProgressIndicator(
                           valueColor:
@@ -183,6 +183,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   onPressed: () async {
                     setState(() {
                       locationData.loading = true;
+                      
                     });
 
                     await locationData.getCurrentPosition();

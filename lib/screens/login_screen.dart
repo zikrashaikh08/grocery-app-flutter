@@ -85,15 +85,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       absorbing: _validPhoneNumber ? false : true,
                       child: FlatButton(
                         onPressed: () {
-                          
                           setState(() {
                             auth.loading = true;
                             auth.screen = 'MapScreen';
+                            auth.latitude = locationData.latitude;
+                            auth.longitude = locationData.longitude;
+                            auth.address = locationData.selectedAddress.addressLine;
                           });
                           String number = '+91 ${_phoneNumberController.text}';
                           print("num= $number");
                           auth
-                              .verifyPhone(context: context, number: number)
+                              .verifyPhone(
+                            context: context,
+                            number: number,
+                          )
                               .then((value) {
                             _phoneNumberController.clear();
                             setState(() {
