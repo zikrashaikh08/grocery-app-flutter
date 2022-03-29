@@ -8,6 +8,8 @@ import 'package:grocery_app/providers/location_provider.dart';
 import '../providers/auth_provider.dart';
 import 'package:grocery_app/widgets/my_appbar.dart';
 
+import '../widgets/image_slider.dart';
+
 class HomeScreen extends StatefulWidget {
   static const String id = 'home-screen';
 
@@ -31,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            ImageSlider(),
             RaisedButton(
               onPressed: () {
                 auth.error = '';
