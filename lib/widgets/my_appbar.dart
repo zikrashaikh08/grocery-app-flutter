@@ -35,7 +35,7 @@ class _MyAppBarState extends State<MyAppBar> {
     return AppBar(
       automaticallyImplyLeading: false,
       elevation: 0.0,
-      title: FlatButton(
+      title: TextButton(
         onPressed: () {
           locationData.getCurrentPosition();
           if (locationData.permissionAllowed == true) {
@@ -53,7 +53,8 @@ class _MyAppBarState extends State<MyAppBar> {
                 Flexible(
                   child: Text(
                     _location == null ? 'Address not set' : _location,
-                    style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -64,7 +65,12 @@ class _MyAppBarState extends State<MyAppBar> {
                 ),
               ],
             ),
-            Flexible(child: Text(_address,overflow: TextOverflow.ellipsis,style: TextStyle(color: Colors.white,fontSize: 12),)),
+            Flexible(
+                child: Text(
+              _address,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: Colors.white, fontSize: 12),
+            )),
           ],
         ),
       ),

@@ -90,7 +90,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             auth.screen = 'MapScreen';
                             auth.latitude = locationData.latitude;
                             auth.longitude = locationData.longitude;
-                            auth.address = locationData.selectedAddress.addressLine;
+                            auth.address =
+                                locationData.selectedAddress.toString();
                           });
                           String number = '+91 ${_phoneNumberController.text}';
                           print("num= $number");

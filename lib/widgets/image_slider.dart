@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
 class ImageSlider extends StatefulWidget {
   @override
-  State<ImageSlider> createState() => _ImageSliderState();
+  _ImageSliderState createState() => _ImageSliderState();
 }
 
 class _ImageSliderState extends State<ImageSlider> {
@@ -15,8 +17,8 @@ class _ImageSliderState extends State<ImageSlider> {
     super.initState();
   }
 
-  Future getSliderImageFromDb() async {
-    var firestore = FirebaseFirestore.instance;
+  Future<List> getSliderImageFromDb() async {
+    var _fireStore = FirebaseFirestore.instance;
     QuerySnapshot snapshot = await _fireStore.collection('slider').get();
     setState(() {
       _dataLength = snapshot.docs.length;
@@ -28,49 +30,53 @@ class _ImageSliderState extends State<ImageSlider> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if(_dataLength!=0)
-        FutureBuilder(
-          future: getSliderImageFromDb(),
-          builder: (_, snapShot) {
-            return snapShot.data == null
-                ? Center(child: CircularProgressIndicator(),)
-                : Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CarouselSlider.builder(
-                        itemCount: snapShot.data.length,
-                        itemBuilder: (context, int index) {
-                          DocumentSnapshot sliderImage = snapShot.data[index];
-                          Map getImage = sliderImage.data();
-                          return Padding(
+        if (_dataLength != 0)
+          FutureBuilder<List>(
+            future: getSliderImageFromDb(),
+            builder: (_, snapShot) {
+              return snapShot.data == null
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CarouselSlider.builder(
+                          itemCount: (snapShot.data as List).length,
+                          itemBuilder: (context, index, _) {
+                            DocumentSnapshot sliderImage =
+                                snapShot.data![index];
+                            Map getImage = sliderImage.data() as Map;
+                            return Padding(
                               padding: const EdgeInsets.only(right: 8.0),
                               child: Image.network(
-                                getImage['Image'],
+                                getImage['image'],
                                 fit: BoxFit.fill,
-                              ));
-                        },
-                        options: CarouselOptions(
-                          initialPage: 0,
-                          autoPlay: true,
-                          height: 150,
-                          onPageChanged: (int i,carouselPageChangedReason){
-                            setState((){
-                              _index=i;
-                            })
-                          }
-                        )),
-                  );
-          },
-        ),
-        if(_dataLength!=0)
-        DotsIndicator(
-            dotsCount: _dataLength,
-            position: _index.toDouble(),
-            decorator: DotsDecorator(
-                size: const Size.square(5.0),
-                activeSize: const Size(18.0, 5.0),
-                activeShape: RoundedRectangleBorder(
-                    borderradius: BorderRadius.circular(5.0)),
-                activeColor: Theme.of(context).primaryColor))
+                              ),
+                            );
+                          },
+                          options: CarouselOptions(
+                              initialPage: 0,
+                              autoPlay: true,
+                              height: 150,
+                              onPageChanged:
+                                  (int i, carouselPageChangedReason) {
+                                setState(() {
+                                  _index = i;
+                                });
+                              })),
+                    );
+            },
+          ),
+        if (_dataLength != 0)
+          DotsIndicator(
+              dotsCount: _dataLength,
+              position: _index.toDouble(),
+              decorator: DotsDecorator(
+                  size: const Size.square(5.0),
+                  activeSize: const Size(18.0, 5.0),
+                  activeShape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5.0)),
+                  activeColor: Theme.of(context).primaryColor))
       ],
     );
   }

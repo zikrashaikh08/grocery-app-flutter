@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,9 +19,9 @@ class AuthProvider with ChangeNotifier {
   late String screen;
   late double latitude;
   late double longitude;
-  late double address;
+  late String address;
 
-  Future<void> verifyPhone({BuildContext? context,String? number}) async {
+  Future<void> verifyPhone({BuildContext? context, String? number}) async {
     this.loading = true;
     notifyListeners();
 
@@ -179,17 +178,15 @@ class AuthProvider with ChangeNotifier {
   void updateUser({
     String? id,
     String? number,
-  }){
-      _userServices.updateUserData({
-        'id': id,
-        'number': number,
-        'latitude': this.latitude,
-        'longitude': this.longitude,
-        'address': this.address
-      });
-      this.loading = false;
-      notifyListeners();
-      
-    }
+  }) {
+    _userServices.updateUserData({
+      'id': id,
+      'number': number,
+      'latitude': this.latitude,
+      'longitude': this.longitude,
+      'address': this.address
+    });
+    this.loading = false;
+    notifyListeners();
   }
-
+}

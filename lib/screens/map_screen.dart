@@ -19,8 +19,7 @@ class _MapScreenState extends State<MapScreen> {
   late GoogleMapController _mapController;
   bool _locating = false;
   bool _loggedIn = false;
-  late User user;
-
+  User? user = FirebaseAuth.instance.currentUser;
   @override
   void initState() {
     //check user logged in or not,while opening map screen
@@ -101,7 +100,7 @@ class _MapScreenState extends State<MapScreen> {
             Positioned(
               bottom: 0.0,
               child: Container(
-                height: 200,
+                // height: 200,
                 width: MediaQuery.of(context).size.width,
                 color: Colors.white,
                 child: Column(
@@ -116,31 +115,32 @@ class _MapScreenState extends State<MapScreen> {
                         : Container(),
                     Padding(
                       padding: const EdgeInsets.only(left: 10, right: 20),
-                      child: TextButton.icon(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.location_searching,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                          label: Flexible(
-                            child: Text(
-                              _locating
-                                  ? 'locating...'
-                                  : locationData.selectedAddress.featureName,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                  color: Colors.black),
+                      child: Column(
+                        children: [
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.location_searching,
+                              color: Theme.of(context).primaryColor,
                             ),
-                          )),
+                          ),
+                          Text(
+                            _locating
+                                ? 'locating...'
+                                : locationData.selectedAddress!.name!,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                color: Colors.black),
+                          ),
+                        ],
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 20, right: 20),
                       child: Text(
-                        _locating
-                            ? ''
-                            : locationData.selectedAddress.addressLine,
+                        _locating ? '' : locationData.selectedAddress!.country!,
                         style: TextStyle(color: Colors.black54),
                       ),
                     ),
@@ -164,11 +164,11 @@ class _MapScreenState extends State<MapScreen> {
                                   _auth.latitude = locationData.latitude;
                                   _auth.longitude = locationData.longitude;
                                   _auth.address =
-                                      locationData.selectedAddress.addressLine;
+                                      locationData.selectedAddress.toString();
                                 });
                                 _auth.updateUser(
-                                  id: user.uid,
-                                  number: user.phoneNumber,
+                                  id: user!.uid,
+                                  number: user!.phoneNumber,
                                 );
                                 Navigator.pushNamed(context, HomeScreen.id);
                               }

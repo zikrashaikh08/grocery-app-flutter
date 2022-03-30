@@ -18,8 +18,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  
-
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
@@ -28,13 +26,14 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(112),
         child: MyAppBar(),
-      ), 
+      ),
       body: Center(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          // mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             ImageSlider(),
-            RaisedButton(
+            ElevatedButton(
               onPressed: () {
                 auth.error = '';
                 FirebaseAuth.instance.signOut().then((value) {
@@ -47,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               child: Text('Sign Out'),
             ),
-            RaisedButton(
+            ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, WelcomeScreen.id);
               },
