@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_app/providers/location_provider.dart';
 import 'package:grocery_app/screens/map_screen.dart';
+import 'package:grocery_app/screens/welcome_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -77,10 +79,14 @@ class _MyAppBarState extends State<MyAppBar> {
       actions: [
         IconButton(
           icon: Icon(
-            Icons.account_circle_outlined,
+            Icons.power_settings_new,
             color: Colors.white,
           ),
-          onPressed: () {},
+          onPressed: () {
+            FirebaseAuth.instance.signOut();
+            Navigator.pushReplacementNamed(context, WelcomeScreen.id);
+            //this is temporary
+          },
         ),
       ],
       bottom: PreferredSize(

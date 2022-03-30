@@ -39,15 +39,15 @@ class _ImageSliderState extends State<ImageSlider> {
                       child: CircularProgressIndicator(),
                     )
                   : Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.only(top: 8),
                       child: CarouselSlider.builder(
                           itemCount: (snapShot.data as List).length,
                           itemBuilder: (context, index, _) {
                             DocumentSnapshot sliderImage =
                                 snapShot.data![index];
                             Map getImage = sliderImage.data() as Map;
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
+                            return SizeBox(
+                              width: MediaQuery.of(context).size.width,
                               child: Image.network(
                                 getImage['image'],
                                 fit: BoxFit.fill,
@@ -55,15 +55,15 @@ class _ImageSliderState extends State<ImageSlider> {
                             );
                           },
                           options: CarouselOptions(
-                              initialPage: 0,
-                              autoPlay: true,
-                              height: 150,
-                              onPageChanged:
-                                  (int i, carouselPageChangedReason) {
-                                setState(() {
-                                  _index = i;
-                                });
-                              })),
+                            viewportFraction: 1,
+                            initialPage: 0,
+                            autoPlay: true,
+                            height: 150,
+                            onPageChanged:(int i, carouselPageChangedReason) {
+                            setState(() {
+                              _index = i;
+                              });
+                          })),
                     );
             },
           ),

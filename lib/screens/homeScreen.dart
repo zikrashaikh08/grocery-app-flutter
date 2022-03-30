@@ -33,25 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             ImageSlider(),
-            ElevatedButton(
-              onPressed: () {
-                auth.error = '';
-                FirebaseAuth.instance.signOut().then((value) {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => WelcomeScreen(),
-                      ));
-                });
-              },
-              child: Text('Sign Out'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, WelcomeScreen.id);
-              },
-              child: Text('Home Screen'),
-            ),
+            
           ],
         ),
       ),
