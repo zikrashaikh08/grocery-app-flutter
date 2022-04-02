@@ -2,6 +2,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:grocery_app/screens/top_pick_store.dart';
 import 'package:grocery_app/screens/welcome_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:grocery_app/providers/location_provider.dart';
@@ -33,7 +34,10 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             ImageSlider(),
-            
+            Container(
+              height: 300,
+              
+              child: TopPickStore()),
           ],
         ),
       ),

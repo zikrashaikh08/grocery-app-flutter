@@ -20,9 +20,12 @@ class _ImageSliderState extends State<ImageSlider> {
   Future<List> getSliderImageFromDb() async {
     var _fireStore = FirebaseFirestore.instance;
     QuerySnapshot snapshot = await _fireStore.collection('slider').get();
-    setState(() {
+    if (mounted) {
+      setState(() {
       _dataLength = snapshot.docs.length;
     });
+      
+    }
     return snapshot.docs;
   }
 
@@ -46,7 +49,7 @@ class _ImageSliderState extends State<ImageSlider> {
                             DocumentSnapshot sliderImage =
                                 snapShot.data![index];
                             Map getImage = sliderImage.data() as Map;
-                            return SizeBox(
+                            return SizedBox(
                               width: MediaQuery.of(context).size.width,
                               child: Image.network(
                                 getImage['image'],
@@ -80,4 +83,6 @@ class _ImageSliderState extends State<ImageSlider> {
       ],
     );
   }
+
+  
 }
