@@ -1,5 +1,4 @@
 import 'dart:html';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -28,10 +27,12 @@ class _TopPickStoreState extends State<TopPickStore> {
   void initState() {
     _userServices.getUserById(user!.uid).then((result) {
       if (user != null) {
-        setState(() {
-          _userLatitude = result.data()!['latitude'];
-          _usertLongitude = result.data()!['longitude'];
-        });
+        if (mounted) {
+          setState(() {
+            _userLatitude = result.data()['latitude'];
+            _usertLongitude = result.data()['longitude'];
+          });
+        }
       } else {
         Navigator.pushReplacementNamed(context, WelcomeScreen.id);
       }
@@ -42,7 +43,8 @@ class _TopPickStoreState extends State<TopPickStore> {
   String getDistance(Location) {
     var distance = Geolocator.distanceBetween(
         _userLatitude, _usertLongitude, Location.latitude, Location.longitude);
-    return distance.toString();
+    var distanceInKm = distance / 1000; //this is will show in kilometer
+    return distanceInKm.toStringAsFixed(2);
   }
 
   @override
@@ -52,64 +54,81 @@ class _TopPickStoreState extends State<TopPickStore> {
         stream: _storeServices.getTopPickedStore(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapShot) {
           if (!snapShot.hasData) return CircularProgressIndicator();
+          //now we need to show store inly with in 10 Km distance
+          //need to confirm even no shop near by or not
           List shopDistance = [];
-          for (int i = 0; i <= snapShot.data!.docs.length; i++) {
+          for (int i = 0; i <= snapShot.data!.docs.length - 1; i++) {
             var distance = Geolocator.distanceBetween(
               _userLatitude,
               _usertLongitude,
               snapShot.data!.docs[i]['location'].latitude,
               snapShot.data!.docs[i]['location'].longitude,
             );
-            snap
+            var distanceInKm = distance / 1000;
+            shopDistance.add(
+                distanceInKm); //this will sort with nearest distance. if nearest distance  is more than 10 ,that means no shop near by;
+            if (shopDistance[0] > 10) {
+              return Container();
+            }
           }
+          shopDistance.sort();
           return Column(
             children: [
-              Flexible(
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children:
-                      snapShot.data!.docs.map((DocumentSnapshot document) {
-                    return Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Container(
-                        width: 80,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: 80,
-                              height: 80,
-                              child: Card(
-                                child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(4),
-                                    child: Image.network(
-                                      document['imageUrl'],
-                                      fit: BoxFit.cover,
-                                    )),
-                              ),
-                            ),
-                            Container(
-                              height: 35,
-                              child: Text(
-                                document['shopName'],
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
+              Container(
+                child: Flexible(
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children:
+                        snapShot.data!.docs.map((DocumentSnapshot document) {
+                      //show the store only in 10km and u can also increase or discrease the distance
+                      if (double.parse(getDistance(document['location'])) <=
+                          10) {
+                        return Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Container(
+                            width: 80,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: 80,
+                                  height: 80,
+                                  child: Card(
+                                    child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: Image.network(
+                                          document['imageUrl'],
+                                          fit: BoxFit.cover,
+                                        )),
+                                  ),
                                 ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                                Container(
+                                  height: 35,
+                                  child: Text(
+                                    document['shopName'],
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Text(
+                                  '${getDistance(document['location'])}Km',
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 10),
+                                )
+                              ],
                             ),
-                            Text(
-                              '${getDistance(document['location'])}Km',
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 10),
-                            )
-                          ],
-                        ),
-                      ),
-                    );
-                  }).toList(),
+                          ),
+                        );
+                      } else {
+                        //if no store in
+                        return Container();
+                      }
+                    }).toList(),
+                  ),
                 ),
               ),
             ],
@@ -119,3 +138,5 @@ class _TopPickStoreState extends State<TopPickStore> {
     );
   }
 }
+//to calculate the distance we need user location. that mean we should not allow the user to end 
+//home screen without setting their delivery location.

@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_app/providers/location_provider.dart';
 import 'package:grocery_app/screens/homeScreen.dart';
+import 'package:grocery_app/screens/landing_screen.dart';
 import 'package:grocery_app/screens/map_screen.dart';
 
 import '../services/user_services.dart';
@@ -20,6 +21,7 @@ class AuthProvider with ChangeNotifier {
   late double latitude;
   late double longitude;
   late String address;
+  late String location;
 
   Future<void> verifyPhone({BuildContext? context, String? number}) async {
     this.loading = true;
@@ -99,7 +101,7 @@ class AuthProvider with ChangeNotifier {
               ),
             ),
             actions: [
-              FlatButton(
+              TextButton(
                 onPressed: () async {
                   try {
                     PhoneAuthCredential phoneAuthCredential =
@@ -119,7 +121,7 @@ class AuthProvider with ChangeNotifier {
                             //need to check user data already exists in db or not.
                             //id exists,data will update or create new data
                             Navigator.pushReplacementNamed(
-                                context, HomeScreen.id);
+                                context, LandingScreen.id);
                           } else {
                             //need to update new selected address
 
@@ -134,7 +136,7 @@ class AuthProvider with ChangeNotifier {
                           //will create new data db
                           _createUser(id: user.uid, number: user.phoneNumber);
                           Navigator.pushReplacementNamed(
-                              context, HomeScreen.id);
+                              context, LandingScreen.id);
                         }
                       });
                     } else {
@@ -184,7 +186,8 @@ class AuthProvider with ChangeNotifier {
       'number': number,
       'latitude': this.latitude,
       'longitude': this.longitude,
-      'address': this.address
+      'address': this.address,
+      'location': this.location
     });
     this.loading = false;
     notifyListeners();
