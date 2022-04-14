@@ -21,6 +21,8 @@ class _LandingScreenState extends State<LandingScreen> {
   User user = FirebaseAuth.instance.currentUser!;
   late String _location;
   late String _address;
+  bool loading = true;
+
   @override
   void initState() {
     UserServices _userServices = UserServices();
@@ -48,10 +50,11 @@ class _LandingScreenState extends State<LandingScreen> {
       prefs.setString('address',
           dbResult.data()['location']); //location is not saving in db
       prefs.setString('address', dbResult.data()['address']);
-      if(mounted){
+      if (mounted) {
         setState(() {
-        _location = dbResult.data()['location'];
-        _address = dbResult.data()['address'];
+          _location = dbResult.data()['location'];
+          _address = dbResult.data()['address'];
+          loading = false;
         });
       }
       Navigator.pushReplacementNamed(context, HomeScreen.id);
@@ -89,6 +92,7 @@ class _LandingScreenState extends State<LandingScreen> {
                 style: TextStyle(color: Colors.grey),
               ),
             ),
+            CircularProgressIndicator(),
             Container(
                 child: Image.asset(
               'image/city.png',
@@ -108,15 +112,18 @@ class _LandingScreenState extends State<LandingScreen> {
             TextButton(
               color: Theme.of(context).primaryColor,
               onPressed: () {
-                LocationProvider.getCurrentPosition();
-                if (_locationProvider.permissionAllowed == true) {
+                _locationProvider.getCurrentPosition();
+                if (_locationProvider.selectedAddress != null) {
                   Navigator.pushReplacementNamed(context, MapScreen.id);
                 } else {
                   print('Permission not allowed');
                 }
                 Navigator.pushReplacementNamed(context, HomeScreen.id);
               },
-              child: Text(_location!=null ? 'Update Location':'Set Your Location',style: TextStyle(color: Colors.white),),
+              child: Text(
+                _location != null ? 'Update Location' : 'Set Your Location',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         ),

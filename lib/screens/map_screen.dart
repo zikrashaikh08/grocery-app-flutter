@@ -154,7 +154,7 @@ class _MapScreenState extends State<MapScreen> {
                         width: MediaQuery.of(context).size.width - 40,
                         child: AbsorbPointer(
                           absorbing: _locating ? true : false,
-                          child: FlatButton(
+                          child: TextButton(
                             onPressed: () {
                               //save address in shared preferences
                               locationData.savePrefs();
@@ -167,13 +167,13 @@ class _MapScreenState extends State<MapScreen> {
                                   _auth.address =
                                       locationData.selectedAddress.toString();
                                   _auth.location =
-                                      locationData.selectedAddress.featureName;
+                                      locationData.selectedAddress.toString();
                                 });
                                 _auth.updateUser(
                                   id: user!.uid,
                                   number: user!.phoneNumber,
                                 );
-                                Navigator.pushNamed(context, LandingScreen.id);
+                                Navigator.pushNamed(context, HomeScreen.id);
                               }
                             },
                             color: _locating

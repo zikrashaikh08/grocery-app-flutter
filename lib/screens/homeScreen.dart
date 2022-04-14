@@ -32,12 +32,12 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           // mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ImageSlider(),
             Container(
-              height: 300,
-              
-              child: TopPickStore()),
+                height: 170,
+                child: TopPickStore()),
           ],
         ),
       ),

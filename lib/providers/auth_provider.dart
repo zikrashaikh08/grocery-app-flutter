@@ -171,7 +171,9 @@ class AuthProvider with ChangeNotifier {
       'number': number,
       'latitude': this.latitude,
       'longitude': this.longitude,
-      'address': this.address
+      'address': this.address,
+      'location': this.location
+
     });
     this.loading = false;
     notifyListeners();

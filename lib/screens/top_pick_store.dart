@@ -29,8 +29,11 @@ class _TopPickStoreState extends State<TopPickStore> {
       if (user != null) {
         if (mounted) {
           setState(() {
-            _userLatitude = result.data()['latitude'];
-            _usertLongitude = result.data()['longitude'];
+            var Remove;
+            _userLatitude = Remove .data();
+            result['latitude'];
+            _usertLongitude = Remove .data();
+            result['longitude'];
           });
         }
       } else {
@@ -71,18 +74,27 @@ class _TopPickStoreState extends State<TopPickStore> {
               return Container();
             }
           }
-          shopDistance.sort();
-          return Column(
-            children: [
-              Container(
-                child: Flexible(
+          // shopDistance.sort();
+          return Padding(
+            padding: const EdgeInsets.only(left: 8,right: 8),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    SizedBox(
+                      height: 30,
+                      
+                      child: Image.asset('images/like.gif')),
+                    Text('Top Picked Stores for you',style: TextStyle(fontWeight: FontWeight.w900,fontSize: 18),),
+                  ],
+                ),
+                Flexible(
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     children:
                         snapShot.data!.docs.map((DocumentSnapshot document) {
                       //show the store only in 10km and u can also increase or discrease the distance
-                      if (double.parse(getDistance(document['location'])) <=
-                          10) {
+                      if (double.parse(getDistance(document['location'])) <=10) {
                         return Padding(
                           padding: const EdgeInsets.all(4.0),
                           child: Container(
@@ -130,8 +142,8 @@ class _TopPickStoreState extends State<TopPickStore> {
                     }).toList(),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),
